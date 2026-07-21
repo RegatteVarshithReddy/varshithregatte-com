@@ -1,0 +1,35 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PostCard from "../../components/PostCard.astro";
+import { PILLAR_ENTRIES, type PillarKey } from "../../lib/pillars";
+
+export async function getStaticPaths() {
+  return PILLAR_ENTRIES.map(([key, pillar]) => ({
+    params: { pillar: pillar.slug },
+    props: { key, pillar },
+  }));
+}
+
+interface Props {
+  key: PillarKey;
+  pillar: (typeof PILLAR_ENTRIES)[number][1];
+}
+
+const { key, pillar } = Astro.props;
+const posts = (await getCollection(key, ({ data }) => import.meta.env.DEV || !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+---
+
+<BaseLayout title={`${pillar.name} — varshithregatte.com`} description={pillar.description}>
+  <h1 class="text-2xl font-semibold text-neutral-900 dark:text-neutral-100">{pillar.name}</h1>
+  <p class="mt-2 text-sm text-neutral-600 dark:text-neutral-400">{pillar.description}</p>
+  <div class="mt-8">
+    {posts.length === 0 ? (
+      <p class="text-sm text-neutral-500 dark:text-neutral-400">No posts here yet.</p>
+    ) : (
+      posts.map((post) => <PostCard pillarKey={key} post={post} />)
+    )}
+  </div>
+</BaseLayout>

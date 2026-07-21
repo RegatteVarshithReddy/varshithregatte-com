@@ -1,0 +1,36 @@
+---
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import PostLayout from "../../layouts/PostLayout.astro";
+import { PILLAR_ENTRIES, type PillarKey } from "../../lib/pillars";
+
+export async function getStaticPaths() {
+  const paths = await Promise.all(
+    PILLAR_ENTRIES.map(async ([key, pillar]) => {
+      const posts = await getCollection(key, ({ data }) => import.meta.env.DEV || !data.draft);
+      return posts.map((post) => ({
+        params: { pillar: pillar.slug, slug: post.id },
+        props: { key, post },
+      }));
+    })
+  );
+  return paths.flat();
+}
+
+interface Props {
+  key: PillarKey;
+  post: CollectionEntry<PillarKey>;
+}
+
+const { key, post } = Astro.props;
+const { Content } = await render(post);
+---
+
+<PostLayout
+  title={post.data.title}
+  description={post.data.description}
+  pubDate={post.data.pubDate}
+  tags={post.data.tags}
+  pillarKey={key}
+>
+  <Content />
+</PostLayout>

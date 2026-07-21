@@ -1,0 +1,29 @@
+---
+import { PILLAR_ENTRIES } from "../lib/pillars";
+import ThemeToggle from "./ThemeToggle.astro";
+---
+
+<header class="border-b border-neutral-200 dark:border-neutral-800">
+  <div class="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
+    <a href="/" class="font-mono text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+      varshithregatte.com
+    </a>
+    <nav class="flex items-center gap-4">
+      {PILLAR_ENTRIES.map(([, pillar]) => (
+        <a
+          href={`/${pillar.slug}`}
+          class="hidden text-sm text-neutral-600 hover:text-neutral-900 sm:inline dark:text-neutral-400 dark:hover:text-neutral-100"
+        >
+          {pillar.name}
+        </a>
+      ))}
+      <a
+        href="/about"
+        class="text-sm text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
+      >
+        About
+      </a>
+      <ThemeToggle />
+    </nav>
+  </div>
+</header>

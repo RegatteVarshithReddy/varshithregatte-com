@@ -1,0 +1,39 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import PillarBadge from "../components/PillarBadge.astro";
+import type { PillarKey } from "../lib/pillars";
+
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  tags: string[];
+  pillarKey: PillarKey;
+}
+
+const { title, description, pubDate, tags, pillarKey } = Astro.props;
+---
+
+<BaseLayout title={`${title} — varshithregatte.com`} description={description}>
+  <article>
+    <div class="flex items-center gap-3">
+      <PillarBadge pillarKey={pillarKey} />
+      <time datetime={pubDate.toISOString()} class="text-xs text-neutral-500 dark:text-neutral-400">
+        {pubDate.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}
+      </time>
+    </div>
+    <h1 class="mt-3 text-3xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
+      {title}
+    </h1>
+    {tags.length > 0 && (
+      <div class="mt-3 flex flex-wrap gap-2">
+        {tags.map((tag) => (
+          <span class="font-mono text-xs text-neutral-500 dark:text-neutral-400">#{tag}</span>
+        ))}
+      </div>
+    )}
+    <div class="prose prose-neutral mt-8 max-w-none dark:prose-invert prose-a:text-neutral-900 dark:prose-a:text-neutral-100">
+      <slot />
+    </div>
+  </article>
+</BaseLayout>

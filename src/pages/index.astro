@@ -1,0 +1,29 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PostCard from "../components/PostCard.astro";
+import { PILLAR_ENTRIES } from "../lib/pillars";
+
+const postsByPillar = await Promise.all(
+  PILLAR_ENTRIES.map(async ([key]) => {
+    const posts = await getCollection(key, ({ data }) => import.meta.env.DEV || !data.draft);
+    return posts.map((post) => ({ key, post }));
+  })
+);
+
+const posts = postsByPillar
+  .flat()
+  .sort((a, b) => b.post.data.pubDate.valueOf() - a.post.data.pubDate.valueOf());
+---
+
+<BaseLayout
+  title="Varshith Regatte"
+  description="Writing on business & life skills, book notes, homelab builds, and AI news."
+>
+  <p class="text-sm text-neutral-600 dark:text-neutral-400">
+    Sysadmin, homelabber, and aspiring AI entrepreneur. I write about what I'm building, reading, and learning.
+  </p>
+  <div class="mt-8">
+    {posts.map(({ key, post }) => <PostCard pillarKey={key} post={post} />)}
+  </div>
+</BaseLayout>

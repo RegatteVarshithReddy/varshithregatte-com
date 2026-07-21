@@ -1,0 +1,31 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { PILLARS, type PillarKey } from "../lib/pillars";
+
+interface Props {
+  pillarKey: PillarKey;
+  post: CollectionEntry<PillarKey>;
+}
+
+const { pillarKey, post } = Astro.props;
+const pillar = PILLARS[pillarKey];
+const href = `/${pillar.slug}/${post.id}`;
+---
+
+<a
+  href={href}
+  class="group block border-b border-neutral-200 py-6 first:pt-0 last:border-b-0 dark:border-neutral-800"
+>
+  <div class="flex items-center gap-3">
+    <span class={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-mono font-medium ${pillar.badgeClass}`}>
+      {pillar.name}
+    </span>
+    <time datetime={post.data.pubDate.toISOString()} class="text-xs text-neutral-500 dark:text-neutral-400">
+      {post.data.pubDate.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}
+    </time>
+  </div>
+  <h2 class="mt-2 text-lg font-semibold text-neutral-900 group-hover:underline dark:text-neutral-100">
+    {post.data.title}
+  </h2>
+  <p class="mt-1 text-sm text-neutral-600 dark:text-neutral-400">{post.data.description}</p>
+</a>

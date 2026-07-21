@@ -1,0 +1,14 @@
+---
+import { PILLARS, type PillarKey } from "../lib/pillars";
+
+interface Props {
+  pillarKey: PillarKey;
+}
+
+const { pillarKey } = Astro.props;
+const pillar = PILLARS[pillarKey];
+---
+
+<span class={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-mono font-medium ${pillar.badgeClass}`}>
+  {pillar.name}
+</span>
