@@ -18,7 +18,7 @@ const writing = defineCollection({
 const bookNotes = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/book-notes' }),
   schema: pillarSchema.extend({
-    author: z.string(),
+    author: z.string().optional(),
     rating: z.number().min(1).max(5).optional(),
   }),
 });
