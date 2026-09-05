@@ -1,0 +1,41 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Privacy Policy — YouTube Playlist MCP"
+  description="Privacy policy for the YouTube Playlist MCP personal tool."
+>
+  <h1 class="text-2xl font-semibold text-neutral-900 dark:text-neutral-100">
+    Privacy Policy — YouTube Playlist MCP
+  </h1>
+  <div class="prose prose-neutral mt-6 max-w-none dark:prose-invert prose-a:text-neutral-900 dark:prose-a:text-neutral-100">
+    <p>
+      "YouTube Playlist MCP" is a personal, single-user tool built and operated by
+      Varshith Regatte. It is not a public product or service.
+    </p>
+    <p>
+      <strong>What it does:</strong> the application requests read-only access to YouTube
+      account data (playlists and playlist items) via the YouTube Data API, using the
+      <code>youtube.readonly</code> OAuth scope.
+    </p>
+    <p>
+      <strong>Data use:</strong> data retrieved from the YouTube Data API (video titles,
+      links, channel names, and timestamps) is used only within the developer's own
+      personal automation tools. It is never sold, shared with third parties, or used
+      for advertising.
+    </p>
+    <p>
+      <strong>Data storage:</strong> OAuth credentials are stored only on a private
+      server controlled by the developer and are never exposed to any other party.
+    </p>
+    <p>
+      <strong>Single-user scope:</strong> this application is authorized for the
+      developer's own Google account only and is not intended for use by anyone else.
+    </p>
+    <p>
+      <strong>Contact:</strong> questions can be sent to
+      <a href="mailto:varshith.regatte@gmail.com">varshith.regatte@gmail.com</a>.
+    </p>
+  </div>
+</BaseLayout>
