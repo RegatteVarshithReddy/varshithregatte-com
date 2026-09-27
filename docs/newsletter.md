@@ -94,6 +94,12 @@ cp .dev.vars.example .dev.vars   # fill in real or test values
 npm run dev:functions            # builds, then serves at http://localhost:8788 via wrangler
 ```
 
+To try the whole signup flow without a Resend account, set `RESEND_API_BASE` in `.dev.vars` to a local
+server that stands in for Resend. The functions call `POST /emails`, `PATCH /contacts/{email}` (a 404 means
+the contact doesn't exist yet) and `POST /contacts`, all with a bearer token. It defaults to
+`https://api.resend.com`, so leave it unset everywhere else, especially in production, since it decides where
+your API key is sent.
+
 `dev:functions` pins `--compatibility-date` because the workerd bundled with an older wrangler rejects
 "today's" date. Upgrading wrangler removes the need.
 

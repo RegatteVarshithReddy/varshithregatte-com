@@ -10,18 +10,21 @@ export interface Env {
   NEWSLETTER_FROM?: string;
   NEWSLETTER_SIGNING_SECRET?: string;
   TURNSTILE_SECRET_KEY?: string;
+  /** Override the Resend API origin. For local testing against a fake server only. */
+  RESEND_API_BASE?: string;
 }
 
 export type Handler = (context: { request: Request; env: Env }) => Response | Promise<Response>;
 
 export interface Config {
+  apiBase: string;
   apiKey: string;
   segmentId: string;
   from: string;
   secret: string;
 }
 
-const RESEND_API = "https://api.resend.com";
+const DEFAULT_RESEND_API = "https://api.resend.com";
 const TOKEN_TTL_MS = 48 * 60 * 60 * 1000;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const encoder = new TextEncoder();
@@ -32,6 +35,7 @@ export function readConfig(env: Env): Config | null {
     return null;
   }
   return {
+    apiBase: env.RESEND_API_BASE || DEFAULT_RESEND_API,
     apiKey: RESEND_API_KEY,
     segmentId: RESEND_SEGMENT_ID,
     from: NEWSLETTER_FROM,
@@ -114,7 +118,7 @@ export async function verifyTurnstile(secret: string, token: unknown, ip: string
 // --- Resend ---------------------------------------------------------------
 
 function resend(config: Config, path: string, method: string, body: unknown): Promise<Response> {
-  return fetch(`${RESEND_API}${path}`, {
+  return fetch(`${config.apiBase}${path}`, {
     method,
     headers: { Authorization: `Bearer ${config.apiKey}`, "Content-Type": "application/json" },
     body: JSON.stringify(body),
