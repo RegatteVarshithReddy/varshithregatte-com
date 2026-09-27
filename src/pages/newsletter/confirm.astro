@@ -1,0 +1,26 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Confirm subscription — varshithregatte.com" description="Confirm your newsletter subscription." noindex>
+  <h1 class="text-2xl font-semibold text-neutral-900 dark:text-neutral-100">Confirm your subscription</h1>
+  <p class="mt-4 text-neutral-700 dark:text-neutral-300">One more click and you're subscribed.</p>
+
+  <form method="post" action="/api/confirm" class="mt-6">
+    <input type="hidden" name="token" id="token" />
+    <button
+      type="submit"
+      class="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-700 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-300"
+    >
+      Confirm subscription
+    </button>
+  </form>
+  <noscript>
+    <p class="mt-4 text-sm text-neutral-500 dark:text-neutral-400">JavaScript is needed on this page to confirm.</p>
+  </noscript>
+
+  <script is:inline>
+    const token = new URLSearchParams(location.search).get("token");
+    if (token) document.getElementById("token").value = token;
+  </script>
+</BaseLayout>

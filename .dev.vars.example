@@ -1,0 +1,16 @@
+# Local env for `npm run dev:functions` (wrangler pages dev). Copy to .dev.vars.
+# In production the same names are set in the Cloudflare Pages project; see docs/newsletter.md.
+
+RESEND_API_KEY=re_xxxxxxxxxxxx
+RESEND_SEGMENT_ID=
+NEWSLETTER_FROM="Varshith Regatte <newsletter@varshithregatte.com>"
+
+# Long random string used to sign confirmation links: openssl rand -base64 32
+NEWSLETTER_SIGNING_SECRET=
+
+# Optional. Cloudflare's always-passes test secret: 1x0000000000000000000000000000000AA
+TURNSTILE_SECRET_KEY=
+
+# Optional. Point the functions at a fake Resend server instead of api.resend.com,
+# to test the signup flow locally without a real key. Never set this in production.
+# RESEND_API_BASE=http://127.0.0.1:4599

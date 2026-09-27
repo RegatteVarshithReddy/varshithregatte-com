@@ -1,43 +1,60 @@
-# Astro Starter Kit: Minimal
+# varshithregatte.com
 
-```sh
-npm create astro@latest -- --template minimal
+Personal site and newsletter. Writing on business and life skills, book notes, homelab builds, and AI news.
+
+Built with [Astro](https://astro.build) 7, Tailwind 4 and TypeScript, hosted on Cloudflare Pages.
+
+## Content
+
+Posts are Markdown files in `src/content/<collection>/`. There are four collections ("pillars"):
+
+| Collection   | URL           | Purpose                                     |
+| ------------ | ------------- | ------------------------------------------- |
+| `writing`    | `/writing`    | Business management and life-skills lessons |
+| `book-notes` | `/books`      | Summaries and takeaways from reading        |
+| `homelab`    | `/homelab`    | Build logs and lessons from self-hosting    |
+| `ai-news`    | `/ai-news`    | Notable AI developments and my take         |
+
+Frontmatter, validated in `src/content.config.ts`:
+
+```yaml
+---
+title: "Post title"
+description: "One sentence used for the listing, SEO and RSS."
+pubDate: 2026-07-22
+tags: [one, two]        # optional
+draft: true             # optional: shown in dev, left out of production builds, the feed and the newsletter
+---
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+`book-notes` also accepts `author` and `rating` (1-5). `updatedDate` is optional on all of them.
 
-## 🚀 Project Structure
+To add a pillar, register it in both `src/content.config.ts` and `src/lib/pillars.ts`; routes, navigation, the feed and badges pick it up from there.
 
-Inside of your Astro project, you'll see the following folders and files:
+## Commands
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+Run from the repo root. Requires Node 22.12 or newer.
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+| Command                    | Action                                                           |
+| :------------------------- | :--------------------------------------------------------------- |
+| `npm install`              | Install dependencies                                             |
+| `npm run dev`              | Dev server at `localhost:4321` (pages only, no `/api` functions) |
+| `npm run build`            | Build the site to `dist/`                                        |
+| `npm run preview`          | Preview the production build                                     |
+| `npx astro check`          | Typecheck                                                        |
+| `npm run dev:functions`    | Build, then serve with the Cloudflare Functions (docs/newsletter.md) |
+| `npm run newsletter:draft` | Create Resend newsletter drafts for recent posts (docs/newsletter.md) |
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## Deployment
 
-Any static assets, like images, can be placed in the `public/` directory.
+Pushing to `master` runs `.github/workflows/deploy.yml`: build, deploy to Cloudflare Pages, then create
+newsletter drafts for any new posts. It needs the `CLOUDFLARE_API_TOKEN` secret and the
+`CLOUDFLARE_ACCOUNT_ID` variable in the GitHub repo settings.
 
-## 🧞 Commands
+The RSS feed is at `/rss.xml` and the sitemap at `/sitemap-index.xml`.
 
-All commands are run from the root of the project, from a terminal:
+## Newsletter
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Signup and sending run on Resend through two Cloudflare Pages Functions in `functions/`. New posts become
+unsent drafts that you review and send by hand. Setup, required secrets, and local testing are covered in
+[`docs/newsletter.md`](docs/newsletter.md).
