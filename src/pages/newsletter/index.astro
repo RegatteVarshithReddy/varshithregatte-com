@@ -1,0 +1,37 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import NewsletterForm from "../../components/NewsletterForm.astro";
+---
+
+<BaseLayout
+  title="Newsletter — varshithregatte.com"
+  description="New posts on business & life skills, book notes, homelab builds, and AI news, by email."
+>
+  <h1 class="text-2xl font-semibold text-neutral-900 dark:text-neutral-100">Newsletter</h1>
+  <p class="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
+    New posts from every section of the site, by email. No spam, and you can unsubscribe with one click.
+  </p>
+
+  <NewsletterForm />
+  <p id="newsletter-error" role="alert" hidden class="mt-4 text-sm text-red-600 dark:text-red-400"></p>
+
+  <p class="mt-6 text-xs text-neutral-500 dark:text-neutral-400">
+    You'll get a confirmation email first. Addresses are stored with Resend, my email provider, and used only
+    to send this newsletter. Prefer a feed reader? <a href="/rss.xml" class="underline">Use RSS</a>.
+  </p>
+
+  <script is:inline>
+    const messages = {
+      invalid: "That doesn't look like a valid email address.",
+      captcha: "Couldn't verify you're human. Please try again.",
+      expired: "That confirmation link is invalid or has expired. Please subscribe again.",
+      server: "Something went wrong on my end. Please try again in a bit.",
+    };
+    const code = new URLSearchParams(location.search).get("error");
+    const box = document.getElementById("newsletter-error");
+    if (box && code && Object.hasOwn(messages, code)) {
+      box.textContent = messages[code];
+      box.hidden = false;
+    }
+  </script>
+</BaseLayout>

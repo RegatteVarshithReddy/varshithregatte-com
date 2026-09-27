@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "./BaseLayout.astro";
 import PillarBadge from "../components/PillarBadge.astro";
+import NewsletterForm from "../components/NewsletterForm.astro";
 import type { PillarKey } from "../lib/pillars";
 
 interface Props {
@@ -32,8 +33,20 @@ const { title, description, pubDate, tags, pillarKey } = Astro.props;
         ))}
       </div>
     )}
-    <div class="prose prose-neutral mt-8 max-w-none dark:prose-invert prose-a:text-neutral-900 dark:prose-a:text-neutral-100">
+    <!-- data-newsletter-body marks what scripts/draft-newsletter.mjs copies into the email draft. -->
+    <div
+      data-newsletter-body
+      class="prose prose-neutral mt-8 max-w-none dark:prose-invert prose-a:text-neutral-900 dark:prose-a:text-neutral-100"
+    >
       <slot />
     </div>
   </article>
+
+  <section class="mt-16 border-t border-neutral-200 pt-8 dark:border-neutral-800">
+    <h2 class="text-base font-semibold text-neutral-900 dark:text-neutral-100">Get new posts by email</h2>
+    <p class="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
+      Occasional emails when I publish. Unsubscribe anytime.
+    </p>
+    <NewsletterForm />
+  </section>
 </BaseLayout>

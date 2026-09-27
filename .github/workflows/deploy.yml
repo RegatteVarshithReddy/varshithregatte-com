@@ -26,6 +26,8 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.PUBLIC_TURNSTILE_SITE_KEY }}
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
@@ -33,3 +35,13 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy dist --project-name=varshithregatte-com --commit-hash=${{ github.sha }} --commit-message=${{ toJSON(github.event.head_commit.message) }}
+
+      # Runs after the deploy so a draft never exists for a post that isn't live.
+      # Only creates unsent drafts in Resend; you review and send them by hand.
+      - name: Draft newsletter for new posts
+        run: node scripts/draft-newsletter.mjs
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RESEND_SEGMENT_ID: ${{ vars.RESEND_SEGMENT_ID }}
+          NEWSLETTER_FROM: ${{ vars.NEWSLETTER_FROM }}
+          NEWSLETTER_REPLY_TO: ${{ vars.NEWSLETTER_REPLY_TO }}

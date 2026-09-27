@@ -9,7 +9,9 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "dev:functions": "astro build && wrangler pages dev dist --compatibility-date=2026-07-01",
+    "newsletter:draft": "node scripts/draft-newsletter.mjs"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",
@@ -23,6 +25,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
     "@tailwindcss/typography": "^0.5.20",
+    "node-html-parser": "^9.0.4",
     "typescript": "^6.0.3",
     "wrangler": "^4.113.0"
   }
