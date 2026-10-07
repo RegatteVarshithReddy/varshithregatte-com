@@ -1,0 +1,124 @@
+name: PR checks and preview
+
+on:
+  pull_request:
+    branches: [master]
+
+concurrency:
+  group: pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Typecheck & build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run check
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload build output
+        uses: actions/upload-artifact@v7
+        with:
+          name: dist
+          path: dist
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
+
+  links:
+    name: Link check
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build output
+        uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist
+
+      # Offline: checks internal links and #anchors in the built HTML only.
+      - name: Check links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --offline --no-progress --include-fragments --root-dir ${{ github.workspace }}/dist 'dist/**/*.html'
+
+  preview:
+    name: Preview deploy
+    needs: check
+    # Fork and Dependabot PRs don't get the Cloudflare secret; skip instead of failing.
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Download build output
+        uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist
+
+      # The branch alias comes from the PR number, not the head branch name, so
+      # nothing attacker-controlled reaches the command line.
+      - name: Deploy preview to Cloudflare Pages
+        id: deploy
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=varshithregatte-com --branch=pr-${{ github.event.pull_request.number }} --commit-hash=${{ github.event.pull_request.head.sha }} --commit-message="Preview of PR #${{ github.event.pull_request.number }}"
+
+      - name: Assert this was a preview, not production
+        env:
+          DEPLOY_ENV: ${{ steps.deploy.outputs.pages-environment }}
+        run: |
+          if [ "$DEPLOY_ENV" = "production" ]; then
+            echo "::error::Deployed to production instead of a preview"
+            exit 1
+          fi
+
+      - name: Comment preview URL on the PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MARKER: '<!-- cloudflare-pages-preview -->'
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+          ALIAS_URL: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
+          DEPLOY_URL: ${{ steps.deploy.outputs.deployment-url }}
+        run: |
+          set -euo pipefail
+          ALIAS_URL="${ALIAS_URL:-https://pr-$PR.varshithregatte-com.pages.dev}"
+          body=$(printf '%s\n' \
+            "$MARKER" \
+            "**Preview:** $ALIAS_URL" \
+            "" \
+            "Commit \`${SHA::7}\` · [this exact deployment]($DEPLOY_URL)")
+          printf '%s\n' "$body" >> "$GITHUB_STEP_SUMMARY"
+
+          # Update the existing comment on new pushes instead of adding another.
+          id=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
+            --jq '.[] | select(.body | contains(env.MARKER)) | .id' | sed -n 1p)
+          if [ -n "$id" ]; then
+            gh api --method PATCH "repos/$REPO/issues/comments/$id" -f body="$body" > /dev/null
+          else
+            gh api --method POST "repos/$REPO/issues/$PR/comments" -f body="$body" > /dev/null
+          fi
