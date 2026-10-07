@@ -9,6 +9,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "check": "astro check",
     "astro": "astro",
     "dev:functions": "astro build && wrangler pages dev dist --compatibility-date=2026-07-01",
     "newsletter:draft": "node scripts/draft-newsletter.mjs"
