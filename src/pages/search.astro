@@ -1,0 +1,49 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Search — varshithregatte.com" description="Search every post on the site.">
+  <h1 class="text-2xl font-semibold text-neutral-900 dark:text-neutral-100">Search</h1>
+  <div id="search" class="mt-6"></div>
+  <p id="search-unavailable" class="mt-6 hidden text-sm text-neutral-500 dark:text-neutral-400">
+    Search is built along with the production site. Run <code>npm run build &amp;&amp; npm run preview</code> to try it locally.
+  </p>
+</BaseLayout>
+
+<script>
+  // The index in /pagefind/ is generated after `astro build`, so it is absent under `astro dev`.
+  async function init() {
+    try {
+      // @ts-expect-error generated at build time, not a module the bundler can see
+      const { PagefindUI } = await import(/* @vite-ignore */ "/pagefind/pagefind-ui.js");
+      new PagefindUI({ element: "#search", showSubResults: true, showImages: false, autofocus: true });
+    } catch {
+      document.getElementById("search-unavailable")?.classList.remove("hidden");
+    }
+  }
+  const css = document.createElement("link");
+  css.rel = "stylesheet";
+  css.href = "/pagefind/pagefind-ui.css";
+  document.head.append(css);
+  init();
+</script>
+
+<style is:global>
+  /* Map Pagefind's UI variables onto the site's light and dark palettes. */
+  #search {
+    --pagefind-ui-scale: 0.9;
+    --pagefind-ui-primary: #171717;
+    --pagefind-ui-text: #404040;
+    --pagefind-ui-background: #ffffff;
+    --pagefind-ui-border: #e5e5e5;
+    --pagefind-ui-tag: #f5f5f5;
+    --pagefind-ui-font: inherit;
+  }
+  .dark #search {
+    --pagefind-ui-primary: #f5f5f5;
+    --pagefind-ui-text: #d4d4d4;
+    --pagefind-ui-background: #0a0a0a;
+    --pagefind-ui-border: #262626;
+    --pagefind-ui-tag: #171717;
+  }
+</style>

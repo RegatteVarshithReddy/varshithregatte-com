@@ -1,19 +1,9 @@
 ---
-import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import PostCard from "../components/PostCard.astro";
-import { PILLAR_ENTRIES } from "../lib/pillars";
+import { getAllPosts } from "../lib/posts";
 
-const postsByPillar = await Promise.all(
-  PILLAR_ENTRIES.map(async ([key]) => {
-    const posts = await getCollection(key, ({ data }) => import.meta.env.DEV || !data.draft);
-    return posts.map((post) => ({ key, post }));
-  })
-);
-
-const posts = postsByPillar
-  .flat()
-  .sort((a, b) => b.post.data.pubDate.valueOf() - a.post.data.pubDate.valueOf());
+const posts = await getAllPosts();
 ---
 
 <BaseLayout
