@@ -55,10 +55,11 @@ jobs:
           path: dist
 
       # Offline: checks internal links and #anchors in the built HTML only.
+      # /api/* are Cloudflare Pages Functions routes, not files in dist/, so they are excluded.
       - name: Check links
         uses: lycheeverse/lychee-action@v2
         with:
-          args: --offline --no-progress --include-fragments --root-dir ${{ github.workspace }}/dist 'dist/**/*.html'
+          args: --offline --no-progress --include-fragments --exclude '/dist/api/' --root-dir ${{ github.workspace }}/dist 'dist/**/*.html'
 
   preview:
     name: Preview deploy
