@@ -1,0 +1,39 @@
+---
+// Plain HTML form posting to the /api/subscribe Pages Function, so it works
+// without client-side JS. Turnstile is only rendered when a site key is set.
+const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+---
+
+<form method="post" action="/api/subscribe" class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-start">
+  <label class="sr-only" for="newsletter-email">Email address</label>
+  <input
+    id="newsletter-email"
+    type="email"
+    name="email"
+    required
+    autocomplete="email"
+    placeholder="you@example.com"
+    class="w-full flex-1 rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-500"
+  />
+
+  <div class="sr-only" aria-hidden="true">
+    <label>
+      Leave this field empty
+      <input type="text" name="hp_contact" tabindex="-1" autocomplete="off" />
+    </label>
+  </div>
+
+  {turnstileSiteKey && (
+    <>
+      <div class="cf-turnstile" data-sitekey={turnstileSiteKey} data-theme="auto"></div>
+      <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    </>
+  )}
+
+  <button
+    type="submit"
+    class="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-700 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-300"
+  >
+    Subscribe
+  </button>
+</form>
